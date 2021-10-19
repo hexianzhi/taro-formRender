@@ -13,9 +13,7 @@ export default class CustomersInfo extends Component<any, any> {
 
   constructor(props) {
     super(props);
-    // console.log('this.params: ', this.params)
     this.state = {
-      /** 表单数据。 所有 storage 中的数据都要放到 customerInfo 中 */
       customerInfo: {},
       allFormData: cloneDeep(formData),
     };
@@ -52,7 +50,7 @@ export default class CustomersInfo extends Component<any, any> {
     } else {
       item.required = false;
     }
-    this.setState({ formData: _formData });
+    // this.setState({ formData: _formData });
   };
 
   onPickerColumnChange = (e, item) => {
@@ -94,9 +92,9 @@ export default class CustomersInfo extends Component<any, any> {
 
   render() {
     const { customerInfo, allFormData } = this.state;
-    console.log("customerInfo: ", customerInfo);
-    // console.log('allFormData: ', allFormData)
-    // console.log('this.state: ', this.state)
+    // console.log("customerInfo: ", customerInfo);
+    console.log('allFormData: ', allFormData)
+    console.log('this.state: ', this.state)
 
     return (
       <View className="customer_info">

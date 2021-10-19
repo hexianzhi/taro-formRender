@@ -1,5 +1,5 @@
-import { useForceUpdate } from "@/hook/useForceUpdate";
-import { useSet } from "@/hook/useSet";
+// import { useForceUpdate } from "@/hook/useForceUpdate";
+// import { useSet } from "@/hook/useSet";
 import { Picker, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { debounce } from "debounce";
@@ -13,11 +13,11 @@ import {
 import Widget from "./widget";
 
 const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
-  const [state, setState] = useSet({
-    isOpenLayout: false,
-  });
+  // const [state, setState] = useSet({
+  //   isOpenLayout: false,
+  // });
 
-  const { update } = useForceUpdate();
+  // const { update } = useForceUpdate();
 
   useImperativeHandle(ref, () => ({
     validate,
