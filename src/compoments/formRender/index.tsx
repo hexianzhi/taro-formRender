@@ -13,6 +13,9 @@ import {
 } from "./validate";
 import "./index.scss";
 
+const SupportFunctionStatus = ['hidden', 'required', 'disabled']
+
+
 const initTableData = {
   tableList: [],
   tableTitle: "",
@@ -118,7 +121,16 @@ const FormRender = (
 
     return { itemCls, itemStyle, phStyle };
   };
-
+  const getStatus = (obj) => {
+    let result = {}
+    Object.keys(obj).forEach(v => {
+      if (!SupportFunctionStatus.includes(v)) return
+      if (typeof obj[v] === 'function') result[v] = obj[v](formValue, formSchema)
+      else result[v] = obj[v]
+    })
+    console.log('result: ', result);
+    return result
+  }
  
   const onDebounceChange = debounce(onChange, 200);
 
