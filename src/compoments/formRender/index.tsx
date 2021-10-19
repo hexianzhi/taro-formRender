@@ -105,51 +105,7 @@ const FormRender = (
     }
     return true;
   };
-
-  const getTableListValue = (item, index, type) => {
-    console.log("getTableListValue item: ", item);
-    if (!item) return;
-    let temp = "";
-    if (type === "single") {
-      temp = index === -1 ? "" : item.name;
-    } else {
-      temp = item
-        .filter((v) => v)
-        .map((v) => v.name)
-        .join(";"); // TODO 这里貌似不应该写死？ ;;;
-    }
-    return temp;
-  };
-
-  //返回选择的index
-  const getInitValueIndex = (list, value, type) => {
-    if (!list || !list.length) return [];
-    let indexArr = [];
-    if (type == "single") {
-      list.map((item, index) => {
-        if (value == item.name) {
-          indexArr.push(index);
-        }
-      });
-    } else {
-      list.map((item, index) => {
-        // TODO 这里貌似不应该写死 ;;？
-        if (value) {
-          if (
-            value.includes(";") &&
-            value.split(";").some((v) => v === item.name)
-          ) {
-            indexArr.push(index);
-          }
-          if (!value.includes(";") && value.includes(item.name)) {
-            indexArr.push(index);
-          }
-        }
-      });
-    }
-    return indexArr;
-  };
-
+ 
   const getClsOrStyle = (item) => {
     const { type, key, style = {}, className = "", disabled } = item;
     let itemCls = `com-formRender-item ${type} ${className}`;
@@ -163,29 +119,13 @@ const FormRender = (
     return { itemCls, itemStyle, phStyle };
   };
 
-  const showTableList = (item) => {
-    const value = formValue[item.key];
-    const { type, list } = item.widgetProps;
-    const initValue = getInitValueIndex(list, value, type);
-    console.log("showTableList initValue: ", initValue);
-    setState({
-      isOpenLayout: true,
-      tableList: list,
-      tableTitle: item.name,
-      tableType: type,
-      tableInitValue: initValue,
-      activeTableItem: item,
-    });
-  };
-
+ 
   const onDebounceChange = debounce(onChange, 200);
 
   const onPickerClick = (item) => {
     const { checkWidgetShow } = item;
     if (checkWidgetShow && !checkWidgetShow(formValue)) return;
-    if (item.widget === "tableList") {
-      showTableList(item);
-    }
+ 
     if (item.widget === "new-page") {
       const { url, urlParams } = item.widgetProps;
       // 数据传输支持回调形式/参数
@@ -215,41 +155,10 @@ const FormRender = (
     }
   };
 
-  const onInputRangeChange = (key, value, index, onlyTwoDigit) => {
-    const oldValue = formValue[key] || [];
-    const newValue = oldValue.slice();
-    if (onlyTwoDigit && checkBeyondTwoDigit(value)) {
-      // 限定两位小数,input 部分受控,必须重新刷新才能保持值一直
-      update();
-      return;
-    }
-    newValue[index] = value;
-    onChange(key, newValue);
-  };
-
+  
   const onDebounceInputRangeChange = debounce(onInputRangeChange, 100);
 
-  const onConfirmFloat = () => {
-    const key = activeTableItem.key;
-    if (showTableValue.current !== undefined) {
-      onChange(key, showTableValue.current);
-    }
-
-    setState({
-      isOpenLayout: false,
-      ...initTableData, // 清理缓存，并让组件重新渲染一次
-    });
-    showTableValue.current = undefined;
-  };
-
-  const onCancelFloat = () => {
-    setState({
-      isOpenLayout: false,
-      ...initTableData,
-    });
-    showTableValue.current = undefined;
-  };
-
+  
   // 可以提前成单独的子组件。。但是我懒
   const renderItem = (item) => {
     if (!item) return;
@@ -265,30 +174,11 @@ const FormRender = (
     if (type === "picker") {
       itemContent = renderPicker(item);
     }
-    if (type === "tableList") {
-      itemContent = renderTableList(item);
-    }
-    if (type === "inputTableList") {
-      itemContent = renderInputTableList(item);
-    }
-    if (type === "input-picker") {
-      itemContent = renderInputPicker(item);
-    }
-    if (type === "input-range") {
-      itemContent = renderInputRange(item);
-    }
+   
+ 
     if (type === "input") {
       itemContent = (
-        <Card cardLeft={name} isMust={required}>
-          <Input
-            value={value}
-            onInput={(e) => onDebounceChange(key, e.detail.value)}
-            {...typeProps}
-          ></Input>
-          <Text className="unit" style={{ marginRight: 6 }}>
-            {unit}
-          </Text>
-        </Card>
+      
       );
     }
     if (type === "textarea") {
@@ -322,42 +212,14 @@ const FormRender = (
   };
 
   const renderPicker = (item) => {
-    if (!item) return;
+ 
     const { widget, widgetProps, key, name, required } = item;
     let { mode, widgetUnit } = widgetProps || {};
     const value = formValue[key];
     if (!widgetUnit) widgetUnit = "";
     let showValue = "";
 
-    if (value) {
-      if (widget === "picker") {
-        if (mode === "multiSelector" && (value[0] || value[1])) {
-          //TODO 这里的貌似不限应该抽出来？
-          let [fist, last] = value;
-          if (fist === "不限") {
-            showValue = last + widgetUnit + "以下";
-          }
-          if (last === "不限") {
-            showValue = fist + widgetUnit + "以上";
-          }
-          if (fist === "不限" && last === "不限") {
-            showValue = "不限";
-          }
-          if (!showValue) {
-            showValue = value[0] + widgetUnit + "-" + value[1] + widgetUnit;
-          }
-        }
-        if (mode === "selector") {
-          showValue = value + widgetUnit;
-        }
-      } else {
-        showValue = value + widgetUnit;
-      }
-    }
-    if (!showValue) {
-      showValue = "请选择";
-    }
-
+    
     const cls = value ? "ellipsisText" : "ellipsisText phClass";
 
     return (
@@ -386,123 +248,12 @@ const FormRender = (
     );
   };
 
-  const renderInputTableList = (item) => {
-    const { typeProps, key, name, required } = item;
-    let { list } = typeProps || {};
-    const value = formValue[key];
-    const initValue = getInitValueIndex(list, value, "single");
+  
 
-    return (
-      <InputTableList
-        isNewStyle
-        isRequire={required}
-        title={name}
-        initValue={initValue}
-        clickItem={(v, index) => onChange(key, index == -1 ? "" : v.name)}
-        {...typeProps}
-      />
-    );
-  };
+  
+   
 
-  const renderInputRange = (item) => {
-    const { typeProps, key, name, required } = item;
-    const { unit, onlyTwoDigit } = typeProps || {};
-    const value = formValue[key];
-
-    return (
-      <Card cardLeft={name} isMust={required}>
-        <Input
-          alwaysEmbed
-          name="abcdefg" // 跟下面的input 同名就解决了ios切换时键盘收缩问题
-          value={value && value[0]}
-          onInput={(e) =>
-            onInputRangeChange(key, e.detail.value, 0, onlyTwoDigit)
-          }
-          {...typeProps}
-        ></Input>
-        <Text className="unit" style={{ marginRight: 6 }}>
-          {unit}
-        </Text>
-        <View style={{ marginRight: 16 }}>-</View>
-        <Input
-          alwaysEmbed
-          name="abcdefg"
-          value={value && value[1]}
-          onInput={(e) =>
-            onInputRangeChange(key, e.detail.value, 1, onlyTwoDigit)
-          }
-          {...typeProps}
-        ></Input>
-        <Text className="unit"> {unit}</Text>
-      </Card>
-    );
-  };
-
-  const renderInputPicker = (item) => {
-    const { key, name, required, typeProps, widgetProps } = item;
-    const { widgetKey, disabled } = widgetProps;
-    const value = formValue[key];
-    const widgetValue = formValue[widgetKey];
-    let textCls = "picker-text";
-    if (disabled) {
-      textCls += " disabled";
-    }
-    return (
-      <Card cardLeft={name} isMust={required}>
-        <Input
-          value={value}
-          onInput={(e) => onDebounceChange(key, e.detail.value)}
-          {...typeProps}
-        ></Input>
-        <Picker
-          onChange={(e) => onPickerChange(e, item, true)}
-          {...widgetProps}
-        >
-          <View className={textCls}>{widgetValue}</View>
-        </Picker>
-      </Card>
-    );
-  };
-
-  const renderTableList = (item) => {
-    const { typeProps, key, name, required } = item;
-    const { list, type } = typeProps || {};
-    const value = formValue[key];
-    const initValue = getInitValueIndex(list, value, type);
-    // console.log('initValue: ', item.name, initValue);
-
-    return (
-      <TableList
-        isNewStyle
-        resetFontSize
-        isRreshInitValue
-        isRequire={required}
-        title={name}
-        clickItem={(v, index) =>
-          onChange(item.key, getTableListValue(v, index, type))
-        }
-        initValue={initValue}
-        {...typeProps}
-      />
-    );
-  };
-
-  const renderFloatLayoutTableList = () => {
-    return (
-      <TableList
-        isNewStyle
-        resetFontSize
-        isRreshInitValue
-        list={tableList}
-        type={tableType}
-        // title={tableTitle} 弹出来的没有标题
-        initValue={tableInitValue}
-        clickItem={(item, index) => {
-          showTableValue.current = getTableListValue(item, index, tableType);
-        }}
-      />
-    );
-  };
+  
   return (
     <View className="com-formRender">
       <View className="item-wrap">
