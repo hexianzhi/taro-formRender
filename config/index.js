@@ -5,6 +5,7 @@ const config = {
   deviceRatio: {
     640: 2.34 / 2,
     750: 1,
+    350: 2 / 1,
     828: 1.81 / 2
   },
   sourceRoot: 'src',

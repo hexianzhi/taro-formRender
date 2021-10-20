@@ -20,6 +20,5 @@ export const getStatus = (obj, formValue, formSchema) => {
     if (typeof obj[v] === "function") result[v] = obj[v](formValue, formSchema);
     else result[v] = obj[v];
   });
-  console.log("result: ", result);
-  return result;
+  return result as any;
 };

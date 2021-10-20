@@ -1,10 +1,4 @@
 .com-formRender {
-  .com-formRender-item-wrap {
-    // background-color: #fff;
-    // width: 100vw;
-    // padding: 0 16px;
-  }
-
   .com-formRender-item {
     font-size: 14px;
     background-color: #fff;
@@ -12,7 +6,6 @@
     padding: 0 16px;
     box-sizing: border-box;
 
-    
     input {
       width: 100%;
       font-size: 14px;
@@ -30,32 +23,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .card_box {
-      width: 100%;
-      // padding: 0;
-      .card_box_child {
-        width: 100%;
-        padding: 0;
-        .card_left {
-          font-size: 14px;
-          min-width: 70px;
-          margin-right: 4px;
-          font-weight: bold;
-        }
-      }
-    }
-    .card-content {
-      width: 100%;
-    }
 
-    .picker-com {
-      width: 100%;
-    }
-
-    .unit {
-      word-break: keep-all;
-      color: #666666;
-    }
     .input-placeholder {
       color: rgba(0, 0, 0, 0.3);
       font-size: 14px;
@@ -74,9 +42,6 @@
   // reset css
   .com-formRender-item.input,
   .com-formRender-item.input-range {
-    .at-icon.at-icon-chevron-right {
-      display: none;
-    }
   }
   .com-formRender-item.textarea {
     flex-direction: column;
@@ -93,36 +58,5 @@
       font-size: 14px;
     }
   }
-  .com-formRender-item.input-picker {
-    .picker-text {
-      word-break: keep-all;
-      padding: 5px;
-      color: #666666;
-    }
-  }
-  .com-formRender-item.inputTableList {
-    .input_tablet_list {
-      .select_content {
-        width: auto;
-      } 
-      .select_title {
-        padding-top: 0;
-      }
-    }
-    width: initial;
-    margin: initial;
-    .select_title {
-      width: initial;
-      margin: 0;
-      margin-bottom: 16rpx;
-    }
-  }
-  // reset css
-  .com-formRender-item.tableList {
-    width: initial;
-    margin: initial;
-    .tablet_list {
-      margin-bottom: 0;
-    }
-  }
+ 
 }

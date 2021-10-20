@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/sort-comp */
-import { View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
+import { View } from "@tarojs/components";
 import cloneDeep from "lodash.clonedeep";
 import React, { Component } from "react";
 import FormRender from "./formRender";
 import { formData } from "./formData";
-import "./index.scss";
+// import "./index.scss";
 
-export default class CustomersInfo extends Component<any, any> {
-  formRef = React.useRef<any>();
+export default class Index extends Component<any, any> {
+  formRef = React.createRef<any>();
 
   constructor(props) {
     super(props);
@@ -19,13 +19,9 @@ export default class CustomersInfo extends Component<any, any> {
     };
   }
 
-  async componentDidMount() {}
-
-  componentDidShow() {}
-
-  onChange = (key, value) => {
+  onChange = (value, key) => {
+    console.log("onChange key, value: ", key, value);
     const { customerInfo } = this.state;
-    const oldValue = customerInfo[key];
     this.setState(
       {
         customerInfo: { ...customerInfo, [key]: value },
@@ -93,11 +89,10 @@ export default class CustomersInfo extends Component<any, any> {
   render() {
     const { customerInfo, allFormData } = this.state;
     // console.log("customerInfo: ", customerInfo);
-    console.log('allFormData: ', allFormData)
-    console.log('this.state: ', this.state)
+    console.log("allFormData: ", allFormData);
 
     return (
-      <View className="customer_info">
+      <View className="index">
         <FormRender
           ref={this.formRef}
           formValue={customerInfo}

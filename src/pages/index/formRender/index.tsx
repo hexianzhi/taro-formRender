@@ -5,12 +5,13 @@ import Taro from "@tarojs/taro";
 import { debounce } from "debounce";
 import React, { forwardRef, useImperativeHandle } from "react";
 import "./index.scss";
-import { getClsOrStyle } from "./utils";
+import { getClsOrStyle, getStatus } from "./utils";
 import {
-  DefaultValidateTypeMsgMap, isEmptyValue,
-  requiredRuleMsg
+  DefaultValidateTypeMsgMap,
+  isEmptyValue,
+  requiredRuleMsg,
 } from "./validate";
-import Widget from "./widget";
+import { Widgets } from "./widget";
 
 const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
   // const [state, setState] = useSet({
@@ -46,8 +47,8 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
           if (!isSuccess) {
             const msg =
               requiredRuleMsg(schema) ||
-              DefaultValidateTypeMsgMap[schema.type] + schema.name ||
-              schema.name + "必填";
+              DefaultValidateTypeMsgMap[schema.type] + schema.title ||
+              schema.title + "必填";
 
             throw msg;
             // 抛出是为了从第一个开始提示
@@ -74,6 +75,13 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
   };
 
   const onDebounceChange = debounce(onChange, 200);
+
+  const onAdapterChange = (value, key) => {
+    if (typeof value === "object" && value.detail.value) {
+      value = value.detail.value;
+    }
+    onChange(value, key);
+  };
 
   const onPickerClick = (item) => {
     const { checkWidgetShow } = item;
@@ -107,29 +115,35 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
 
   // const onDebounceInputRangeChange = debounce(onInputRangeChange, 100);
 
-  // 可以提前成单独的子组件。。但是我懒
   const renderItem = (item) => {
     if (!item) return;
-    const { type, typeProps, key, name, required, render, extra } = item;
-    const { unit } = typeProps || {};
-    const { itemCls, itemStyle } = getClsOrStyle(item, formValue);
+    const { type, typeProps, key, title, render, extra } = item || {};
+    const { hidden } = getStatus(item, formValue, formSchema);
+    if (!type) {
+      throw `${title}字段没有 type,无法渲染`;
+    }
+    if (hidden) {
+      return null;
+    }
     const value = formValue[key];
 
-    const compProps = { item, formValue, formSchema };
-    if (!type) {
-      throw `${name}字段没有 type,无法渲染`;
-    }
-    const Compoment = Widget[type];
-    console.log("Compoment: ", Compoment);
-    // TODO 切换成at 做成样例
-    // if (type === "picker") {
-    //   itemContent = renderPicker(item);
-    // }
-    // // 自定义
-    // if (type === "custom") {
-    //   itemContent = render(value, item, onChange);
-    // }
+    const tempChange = (v) => onAdapterChange(v, key); // 注入 key
+    const compProps = {
+      item,
+      value,
+      formSchema,
+      onChange: tempChange,
+      ...typeProps, // 是否控制一下？
+    };
+    console.log("compProps: ", compProps);
 
+    let Compoment = Widgets[type];
+    // 自定义
+    if (type === "custom") {
+      Compoment = render(value, item, tempChange);
+    }
+    
+    const { itemCls, itemStyle } = getClsOrStyle(item, formValue);
     return (
       <View className={itemCls} style={itemStyle}>
         <Compoment {...compProps}></Compoment>
@@ -139,7 +153,7 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
   };
 
   const renderPicker = (item) => {
-    const { widget, widgetProps, key, name, required } = item;
+    const { widget, widgetProps, key, title, required } = item;
     let { mode, widgetUnit } = widgetProps || {};
     const value = formValue[key];
     if (!widgetUnit) widgetUnit = "";
@@ -172,7 +186,7 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
 
   return (
     <View className="com-formRender">
-      <View className="item-wrap">{formSchema.map((v) => renderItem(v))}</View>
+      {formSchema.map((v) => renderItem(v))}
     </View>
   );
 };
