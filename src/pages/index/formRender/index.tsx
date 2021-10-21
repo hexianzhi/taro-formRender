@@ -74,46 +74,12 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
     return true;
   };
 
-  const onDebounceChange = debounce(onChange, 200);
-
   const onAdapterChange = (value, key) => {
     if (typeof value === "object" && value.detail.value) {
       value = value.detail.value;
     }
     onChange(value, key);
   };
-
-  const onPickerClick = (item) => {
-    const { checkWidgetShow } = item;
-    if (checkWidgetShow && !checkWidgetShow(formValue)) return;
-
-    if (item.widget === "new-page") {
-      const { url, urlParams, onJumpToNewPage } = item.widgetProps;
-      // 数据传输支持回调形式/参数
-      if (onJumpToNewPage) {
-        onJumpToNewPage(item);
-        return;
-      }
-      Taro.navigateTo({
-        url: `${url}?${urlParams}`,
-      });
-    }
-  };
-
-  const onPickerChange = (e, item) => {
-    const value = e.detail.value;
-    let { key, widgetProps } = item;
-    const { mode, range } = widgetProps || {};
-    if (mode === "multiSelector") {
-      const [left, right] = value;
-      onChange(key, [range[0][left], range[1][right]]);
-    }
-    if (mode === "selector") {
-      onChange(key, range[value]);
-    }
-  };
-
-  // const onDebounceInputRangeChange = debounce(onInputRangeChange, 100);
 
   const renderItem = (item) => {
     if (!item) return;
@@ -133,6 +99,7 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
       value,
       formSchema,
       onChange: tempChange,
+
       ...typeProps, // 是否控制一下？
     };
     console.log("compProps: ", compProps);
@@ -142,44 +109,12 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
     if (type === "custom") {
       Compoment = render(value, item, tempChange);
     }
-    
+
     const { itemCls, itemStyle } = getClsOrStyle(item, formValue);
     return (
       <View className={itemCls} style={itemStyle}>
         <Compoment {...compProps}></Compoment>
         {extra}
-      </View>
-    );
-  };
-
-  const renderPicker = (item) => {
-    const { widget, widgetProps, key, title, required } = item;
-    let { mode, widgetUnit } = widgetProps || {};
-    const value = formValue[key];
-    if (!widgetUnit) widgetUnit = "";
-    let showValue = "";
-
-    const cls = value ? "ellipsisText" : "ellipsisText phClass";
-
-    return (
-      <View
-        className="card-content ellipsisText"
-        onClick={() => onPickerClick(item)}
-      >
-        {widget === "picker" ? (
-          <Picker
-            className="picker-com"
-            onChange={(e) => onPickerChange(e, item)}
-            // onColumnChange={(e) => onPickerColumnChange(e, item)}
-            {...widgetProps}
-          >
-            <Text className={showValue === "请选择" ? "phClass" : ""}>
-              {showValue}
-            </Text>
-          </Picker>
-        ) : (
-          <Text className={cls}>{showValue || "请选择"}</Text>
-        )}
       </View>
     );
   };

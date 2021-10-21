@@ -15,8 +15,8 @@
 
 export const formData = [
   {
-    key: "text",
-    title: "文本",
+    key: "a",
+    title: "名字",
     required: true,
     type: "input",
     typeProps: {
@@ -27,7 +27,18 @@ export const formData = [
     className: "input",
   },
   {
-    key: "remark",
+    key: "c",
+    title: "国家",
+    required: true,
+    type: "picker",
+    typeProps: {
+      mode: 'selector',
+      range: ['美国', '中国', '巴西', '日本'],
+    },
+    className: "selector",
+  },
+  {
+    key: "b",
     title: "备注",
     required: true,
     type: "textarea",
@@ -39,6 +50,8 @@ export const formData = [
     //   return formValue.type ==='aa';
     // },
   },
+ 
+   
 
   // {
   //   key: 'prefer_region',
