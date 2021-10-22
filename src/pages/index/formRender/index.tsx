@@ -2,10 +2,11 @@
 // import { useSet } from "@/hook/useSet";
 import { Picker, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
-import { debounce } from "debounce";
+import { debounce, isEqual } from "lodash";
+
 import React, { forwardRef, useImperativeHandle } from "react";
 import "./index.scss";
-import { getClsOrStyle, getStatus } from "./utils";
+import { getClsOrStyle, getStatus, isObject } from "./utils";
 import {
   DefaultValidateTypeMsgMap,
   isEmptyValue,
@@ -14,12 +15,6 @@ import {
 import { Widgets } from "./widget";
 
 const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
-  // const [state, setState] = useSet({
-  //   isOpenLayout: false,
-  // });
-
-  // const { update } = useForceUpdate();
-
   useImperativeHandle(ref, () => ({
     validate,
   }));
@@ -75,44 +70,49 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
   };
 
   const onAdapterChange = (value, key) => {
-    if (typeof value === "object" && value.detail.value) {
+    console.log("onAdapterChange value, key: ", value, key);
+    if (isObject(value) && value.detail.value) {
       value = value.detail.value;
     }
     onChange(value, key);
   };
 
-  const renderItem = (item) => {
+  const renderItem = (item, index) => {
     if (!item) return;
     const { type, typeProps, key, title, render, extra } = item || {};
-    const { hidden } = getStatus(item, formValue, formSchema);
+    // 执行函数
+    const { hidden, required, disabled } = getStatus(
+      item,
+      formValue,
+      formSchema
+    );
+    const { itemCls, itemStyle } = getClsOrStyle(item, formValue);
     if (!type) {
       throw `${title}字段没有 type,无法渲染`;
     }
     if (hidden) {
       return null;
     }
-    const value = formValue[key];
 
-    const tempChange = (v) => onAdapterChange(v, key); // 注入 key
+    const value = formValue[key];
+    const tempChange = (v) => onAdapterChange(v, item.key); // 注入 key
     const compProps = {
+      formSchema,
       item,
       value,
-      formSchema,
+      required,
+      disabled,
       onChange: tempChange,
-
-      ...typeProps, // 是否控制一下？
+      ...typeProps,
     };
-    console.log("compProps: ", compProps);
 
     let Compoment = Widgets[type];
     // 自定义
     if (type === "custom") {
       Compoment = render(value, item, tempChange);
     }
-
-    const { itemCls, itemStyle } = getClsOrStyle(item, formValue);
     return (
-      <View className={itemCls} style={itemStyle}>
+      <View className={itemCls} style={itemStyle} key={index}>
         <Compoment {...compProps}></Compoment>
         {extra}
       </View>
@@ -121,9 +121,20 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
 
   return (
     <View className="com-formRender">
-      {formSchema.map((v) => renderItem(v))}
+      {formSchema.map((v, index) => renderItem(v, index))}
     </View>
   );
 };
 
-export default React.memo(forwardRef(FormRender));
+const areEqual = (prev, current) => {
+  if (
+    isEqual(prev.formSchema, current.formSchema) &&
+    isEqual(prev.formValue, current.formValue)
+  ) {
+    console.log("true: ", true);
+    return true;
+  }
+  return false;
+};
+
+export default React.memo(forwardRef(FormRender), areEqual);

@@ -22,3 +22,11 @@ export const getStatus = (obj, formValue, formSchema) => {
   });
   return result as any;
 };
+
+
+function stringContains(str, text) {
+  return str.indexOf(text) > -1;
+}
+
+export const isObject = a =>
+  stringContains(Object.prototype.toString.call(a), 'Object');

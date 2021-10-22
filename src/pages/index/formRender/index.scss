@@ -1,41 +1,28 @@
 .com-formRender {
   .com-formRender-item {
-    // font-size: 14px;
     background-color: #fff;
     width: 100vw;
-    padding: 0 16px;
+    padding: 10px 30px;
     box-sizing: border-box;
+    
     .FrPicker {
       display: flex;
       justify-content: space-between;
-      
     }
 
-    .phClass {
-      color: rgba(0, 0, 0, 0.3);
+    .at-input {
+      margin-left: 0;
+      padding: 10px 0 ;
     }
-
-    &.disabled {
-    }
+    
   }
 
-  // reset css
-  .com-formRender-item.input,
-  .com-formRender-item.input-range {
-  }
   .com-formRender-item.textarea {
     flex-direction: column;
     background-color: #fff;
     padding: 16px;
     .textarea-title {
-      // font-size: 14px;
       margin-bottom: 8px;
-      width: 100%;
-      font-weight: 600;
-    }
-
-    .textarea-content {
-      // font-size: 14px;
     }
   }
 }
