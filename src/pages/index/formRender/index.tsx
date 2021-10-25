@@ -2,23 +2,19 @@
 // import { useSet } from "@/hook/useSet";
 import { Picker, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
-import { debounce } from "debounce";
+import { debounce, isEqual } from "lodash";
+
 import React, { forwardRef, useImperativeHandle } from "react";
 import "./index.scss";
-import { getClsOrStyle } from "./utils";
+import { getClsOrStyle, getStatus, isObject } from "./utils";
 import {
-  DefaultValidateTypeMsgMap, isEmptyValue,
-  requiredRuleMsg
+  DefaultValidateTypeMsgMap,
+  isEmptyValue,
+  requiredRuleMsg,
 } from "./validate";
-import Widget from "./widget";
+import { Widgets } from "./widget";
 
 const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
-  // const [state, setState] = useSet({
-  //   isOpenLayout: false,
-  // });
-
-  // const { update } = useForceUpdate();
-
   useImperativeHandle(ref, () => ({
     validate,
   }));
@@ -46,8 +42,8 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
           if (!isSuccess) {
             const msg =
               requiredRuleMsg(schema) ||
-              DefaultValidateTypeMsgMap[schema.type] + schema.name ||
-              schema.name + "必填";
+              DefaultValidateTypeMsgMap[schema.type] + schema.title ||
+              schema.title + "必填";
 
             throw msg;
             // 抛出是为了从第一个开始提示
@@ -73,108 +69,72 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
     return true;
   };
 
-  const onDebounceChange = debounce(onChange, 200);
-
-  const onPickerClick = (item) => {
-    const { checkWidgetShow } = item;
-    if (checkWidgetShow && !checkWidgetShow(formValue)) return;
-
-    if (item.widget === "new-page") {
-      const { url, urlParams, onJumpToNewPage } = item.widgetProps;
-      // 数据传输支持回调形式/参数
-      if (onJumpToNewPage) {
-        onJumpToNewPage(item);
-        return;
-      }
-      Taro.navigateTo({
-        url: `${url}?${urlParams}`,
-      });
+  const onAdapterChange = (value, key) => {
+    console.log("onAdapterChange value, key: ", value, key);
+    if (isObject(value) && value.detail.value) {
+      value = value.detail.value;
     }
+    onChange(value, key);
   };
 
-  const onPickerChange = (e, item) => {
-    const value = e.detail.value;
-    let { key, widgetProps } = item;
-    const { mode, range } = widgetProps || {};
-    if (mode === "multiSelector") {
-      const [left, right] = value;
-      onChange(key, [range[0][left], range[1][right]]);
-    }
-    if (mode === "selector") {
-      onChange(key, range[value]);
-    }
-  };
-
-  // const onDebounceInputRangeChange = debounce(onInputRangeChange, 100);
-
-  // 可以提前成单独的子组件。。但是我懒
-  const renderItem = (item) => {
+  const renderItem = (item, index) => {
     if (!item) return;
-    const { type, typeProps, key, name, required, render, extra } = item;
-    const { unit } = typeProps || {};
+    const { type, typeProps, key, title, render, extra } = item || {};
+    // 执行函数
+    const { hidden, required, disabled } = getStatus(
+      item,
+      formValue,
+      formSchema
+    );
     const { itemCls, itemStyle } = getClsOrStyle(item, formValue);
-    const value = formValue[key];
-
-    const compProps = { item, formValue, formSchema };
     if (!type) {
-      throw `${name}字段没有 type,无法渲染`;
+      throw `${title}字段没有 type,无法渲染`;
     }
-    const Compoment = Widget[type];
-    console.log("Compoment: ", Compoment);
-    // TODO 切换成at 做成样例
-    // if (type === "picker") {
-    //   itemContent = renderPicker(item);
-    // }
-    // // 自定义
-    // if (type === "custom") {
-    //   itemContent = render(value, item, onChange);
-    // }
+    if (hidden) {
+      return null;
+    }
 
+    const value = formValue[key];
+    const tempChange = (v) => onAdapterChange(v, item.key); // 注入 key
+    const compProps = {
+      formSchema,
+      item,
+      value,
+      required,
+      disabled,
+      onChange: tempChange,
+      ...typeProps,
+    };
+
+    let Compoment = Widgets[type];
+    // 自定义
+    if (type === "custom") {
+      Compoment = render(value, item, tempChange);
+    }
     return (
-      <View className={itemCls} style={itemStyle}>
+      <View className={itemCls} style={itemStyle} key={index}>
         <Compoment {...compProps}></Compoment>
         {extra}
       </View>
     );
   };
 
-  const renderPicker = (item) => {
-    const { widget, widgetProps, key, name, required } = item;
-    let { mode, widgetUnit } = widgetProps || {};
-    const value = formValue[key];
-    if (!widgetUnit) widgetUnit = "";
-    let showValue = "";
-
-    const cls = value ? "ellipsisText" : "ellipsisText phClass";
-
-    return (
-      <View
-        className="card-content ellipsisText"
-        onClick={() => onPickerClick(item)}
-      >
-        {widget === "picker" ? (
-          <Picker
-            className="picker-com"
-            onChange={(e) => onPickerChange(e, item)}
-            // onColumnChange={(e) => onPickerColumnChange(e, item)}
-            {...widgetProps}
-          >
-            <Text className={showValue === "请选择" ? "phClass" : ""}>
-              {showValue}
-            </Text>
-          </Picker>
-        ) : (
-          <Text className={cls}>{showValue || "请选择"}</Text>
-        )}
-      </View>
-    );
-  };
-
   return (
     <View className="com-formRender">
-      <View className="item-wrap">{formSchema.map((v) => renderItem(v))}</View>
+      {formSchema.map((v, index) => renderItem(v, index))}
     </View>
   );
 };
 
-export default React.memo(forwardRef(FormRender));
+const areEqual = (prev, current) => {
+  if (
+    isEqual(prev.formSchema, current.formSchema) &&
+    isEqual(prev.formValue, current.formValue)
+  ) {
+    console.log("true: ", true);
+    return true;
+  }
+  return false;
+};
+
+export default React.memo(forwardRef(FormRender), areEqual);
