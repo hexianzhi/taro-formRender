@@ -1,4 +1,5 @@
 // import Taro from '@tarojs/taro'
+import { IFormSchema } from "./formRender/type";
 
 // const fckBuxian = (ranges, ranges1) => {
 //   ranges1.unshift(['不限', ranges.concat(['不限'])])
@@ -15,12 +16,18 @@
 
 export function getFormData() {
   console.log("getFormData this: ", this);
-  const formData = [
+  const formData: IFormSchema[] = [
     {
       key: "a",
       title: "名字",
       required: true,
       type: "input",
+      rules: [
+        {
+          pattern: /^\w+$/,
+          message: "名字必须为英文",
+        },
+      ],
       typeProps: {
         // name 必传！！不然出现莫名bug！
         name: "a",
@@ -67,11 +74,15 @@ export function getFormData() {
         // 箭头函数绑定 this
         onColumnChange: (e) => {
           // 因为是获取到 value 左侧值，所以 allRangeObj 设计数据结构成 {a: ["a1", 'a2'], b: ['b1', 'b2']}}
-          const allRangeObj = { '广东': ["深圳", "广州"], '广西': ["桂林", "北海"] };
+          const allRangeObj = {
+            广东: ["深圳", "广州"],
+            广西: ["桂林", "北海"],
+          };
           const { column, value } = e.detail;
-          if (column === 0) { // 第一列
+          if (column === 0) {
+            // 第一列
             this.changeSingleFormData(
-              'c',
+              "c",
               [
                 Object.keys(allRangeObj),
                 allRangeObj[Object.keys(allRangeObj)[value]],

@@ -3,7 +3,6 @@
 import { Picker, Text, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { debounce, isEqual } from "lodash";
-
 import React, { forwardRef, useImperativeHandle } from "react";
 import "./index.scss";
 import { getClsOrStyle, getStatus, isObject } from "./utils";
@@ -13,8 +12,9 @@ import {
   requiredRuleMsg,
 } from "./validate";
 import { Widgets } from "./widget";
+import { FRProps } from "./type";
 
-const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
+const FormRender = ({ formSchema, formValue = {}, onChange }: FRProps, ref) => {
   useImperativeHandle(ref, () => ({
     validate,
   }));
@@ -69,12 +69,12 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
     return true;
   };
 
-  const onAdapterChange = (value, key) => {
-    console.log("onAdapterChange value, key: ", value, key);
+  const onAdapterChange = (value, key, newFormValue) => {
+    console.log("onAdapterChange   ", value, key, newFormValue);
     if (isObject(value) && value.detail.value) {
       value = value.detail.value;
     }
-    onChange(value, key);
+    onChange(value, key, newFormValue);
   };
 
   const renderItem = (item, index) => {
@@ -94,8 +94,9 @@ const FormRender = ({ formSchema, formValue = {}, onChange }, ref) => {
       return null;
     }
 
+    const tempChange = (v) =>
+      onAdapterChange(v, key, { ...formValue, [key]: v }); // 注入 key
     const value = formValue[key];
-    const tempChange = (v) => onAdapterChange(v, item.key); // 注入 key
     const compProps = {
       formSchema,
       item,

@@ -3,10 +3,10 @@
 import Taro from "@tarojs/taro";
 import { View } from "@tarojs/components";
 import cloneDeep from "lodash.clonedeep";
+import { AtButton } from "taro-ui";
 import React, { Component } from "react";
 import FormRender from "./formRender";
 import { getFormData } from "./formData";
-import { AtButton } from "taro-ui";
 // import "./index.scss";
 
 export default class Index extends Component<any, any> {
