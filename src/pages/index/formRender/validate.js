@@ -1,3 +1,53 @@
+import Taro from '@tarojs/taro'
+
+
+/**
+ * 1. 验证必填项
+ * 2. 验证 rules: 1. pattern 正则 2. validate 自定义方法
+ *
+ * @returns
+ */
+ export const validate = (formValue, formSchema) => {
+  try {
+    formSchema.forEach(schema => {
+      let isSuccess = true
+      const value = formValue[schema.key]
+      // required单独拿出来处理
+      if (schema.required) {
+        if (Array.isArray(value)) {
+          isSuccess = value.length > 0 && value.every(vv => !isEmptyValue(vv))
+        }
+        if (isEmptyValue(value)) {
+          isSuccess = false
+        }
+        if (!isSuccess) {
+          const msg =
+            requiredRuleMsg(schema) ||
+            DefaultValidateTypeMsgMap[schema.type] + schema.name ||
+            schema.name + '必填'
+
+          throw msg
+          // 抛出是为了从第一个开始提示
+          // TODO 或者是全都提示?分别给错误样式？？
+          // 实时校验？
+        }
+      }
+
+      // 有值才判断正则
+      if (value && schema.rules && schema.rules.length) {
+        schema.rules.some(rule => {
+          if (rule.pattern && !new RegExp(rule.pattern).test(value)) isSuccess = false
+          if (rule.validate && !rule.validate(value)) isSuccess = false
+          if (!isSuccess) throw rule.message
+        })
+      }
+    })
+  } catch (e) {
+    Taro.showToast({ title: e, icon: 'none' })
+    return false
+  }
+  return true
+}
 
 // 值是是否为空
 export const isEmptyValue = value => {

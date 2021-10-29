@@ -1,20 +1,25 @@
 .com-formRender {
   .com-formRender-item {
     background-color: #fff;
-    width: 100vw;
     padding: 10px 30px;
     box-sizing: border-box;
-    
-    .FrPicker {
-      display: flex;
-      justify-content: space-between;
+    &-label {
+      width: 100px;
     }
 
-    .at-input {
-      margin-left: 0;
-      padding: 10px 0 ;
+    &.picker {
+      display: flex;
     }
-    
+
+    &.input {
+      .at-input {
+        margin-left: 0;
+        padding: 10px 0;
+      }
+      .at-input__title {
+        width: 100px;
+      }
+    }
   }
 
   .com-formRender-item.textarea {

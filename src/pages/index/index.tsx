@@ -1,81 +1,66 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable react/sort-comp */
-import Taro from "@tarojs/taro";
 import { View } from "@tarojs/components";
-import cloneDeep from "lodash.clonedeep";
-import { AtButton } from "taro-ui";
 import React, { Component } from "react";
 import FormRender from "./formRender";
-import { getFormData } from "./formData";
-// import "./index.scss";
+import "./index.scss";
+
+const formData = [
+  {
+    key: "a",
+    title: "地址",
+    type: "input",
+    typeProps: {
+      name: "a1",
+      maxLength: 10,
+      title: "地址",
+      placeholder: "请输入",
+      type: "text",
+    },
+  },
+  {
+    key: "c",
+    title: "国家",
+    type: "picker",
+    typeProps: {
+      mode: "selector",
+      range: ["美国", "中国", "巴西", "日本"],
+    },
+  },
+  {
+    key: "b",
+    title: "备注",
+    required: true,
+    type: "textarea",
+    className: "textarea",
+    typeProps: {
+      maxLength: 100,
+    },
+  },
+];
 
 export default class Index extends Component<any, any> {
-  formRef = React.createRef<any>();
-
   constructor(props) {
     super(props);
-    console.log("this: ", this);
     this.state = {
-      customerInfo: {},
-      allFormData: getFormData.apply(this),
+      formValue: {},
+      formSchema: formData,
     };
   }
 
-  onChange = (value, key) => {
-    // console.log("Index value, key: ", value, key);
-    const { customerInfo } = this.state;
-    this.setState(
-      {
-        customerInfo: { ...customerInfo, [key]: value },
-      },
-      () => {}
-    );
-  };
-
-  //新增客源
-  submit = async () => {
-    const canSubmit = this.formRef.current.validate();
-    console.log("canSubmit: ", canSubmit);
-    if (!canSubmit) return;
-  };
-
-  // 改变某个数据源数据
-  changeSingleFormData = (key, newData, name, childName) => {
-    const { allFormData } = this.state;
-    // const _allFormData = allFormData.slice(); // TODO 导致FormRender React.memo 的 pre字段也改变了
-    const _allFormData = cloneDeep(allFormData);
-    const item = _allFormData.find((i) => i.key === key);
-    if (!item) return;
-    if (childName && name) {
-      if (!item[name]) item[name] = {};
-      item[name][childName] = newData;
-    } else if (name) {
-      item[name] = newData;
-    }
-
-    this.setState({ allFormData: _allFormData });
+  onChange = (newValue) => {
+    this.setState({
+      formValue: newValue,
+    });
   };
 
   render() {
-    const { customerInfo, allFormData } = this.state;
-    // console.log("customerInfo: ", customerInfo);
-    // console.log("allFormData: ", allFormData);
-
+    const { formValue, formSchema } = this.state;
     return (
       <View className="index">
         <FormRender
-          ref={this.formRef}
-          formValue={customerInfo}
-          formSchema={allFormData}
+          formValue={formValue}
+          formSchema={formSchema}
           onChange={this.onChange}
         ></FormRender>
-        <AtButton
-          customStyle={{ marginTop: 20 }}
-          type="primary"
-          onClick={() => this.submit()}
-        >
-          确定
-        </AtButton>
       </View>
     );
   }

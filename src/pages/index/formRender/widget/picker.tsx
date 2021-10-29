@@ -1,18 +1,15 @@
 import { View, Text, Picker } from "@tarojs/components";
-import React from 'react'
+import React from "react";
 
 // 注意名字
 const FrPicker = (props) => {
   const { value, item, onChange } = props;
-  const { typeProps = {}, title, required } = item;
-  // console.log("typeProps: ", typeProps);
-  // const { onColumnChange } = typeProps;
+  const { typeProps = {}, title } = item;
 
   const onPickerChange = (e) => {
     const _value = e.detail.value;
     const { mode, range } = typeProps || {};
     if (mode === "multiSelector") {
-      // _value 为索引
       const [left, right] = _value;
       onChange([range[0][left], range[1][right]]);
     }
@@ -22,17 +19,12 @@ const FrPicker = (props) => {
   };
 
   return (
-    <View className="FrPicker">
-      <Text>{title}</Text>
-      <Picker
-        className="picker-com"
-        {...typeProps}
-        onChange={onPickerChange}
-        // onColumnChange={(e) => onColumnChange(e, item)}
-      >
+    <>
+      <Text className="com-formRender-item-label">{title}</Text>
+      <Picker className="picker-com" onChange={onPickerChange} {...typeProps}>
         <Text>{value || "请选择"}</Text>
       </Picker>
-    </View>
+    </>
   );
 };
 

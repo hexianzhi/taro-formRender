@@ -19,6 +19,18 @@ export function getFormData() {
   const formData: IFormSchema[] = [
     {
       key: "a",
+      title: "名字1",
+      type: "input",
+      typeProps: {
+        name: "a1",
+        maxLength: 10,
+        title: "名字1",
+        placeholder: "请输入2",
+        type: "text",
+      },
+    },
+    {
+      key: "b",
       title: "名字",
       required: true,
       type: "input",
@@ -38,22 +50,8 @@ export function getFormData() {
         type: "text",
       },
     },
-
     {
-      key: "a1",
-      title: "名字1",
-      type: "input",
-      typeProps: {
-        name: "a1",
-        maxLength: 10,
-        title: "名字1",
-        placeholder: "请输入2",
-        type: "text",
-      },
-    },
-
-    {
-      key: "ff",
+      key: "c",
       title: "国家",
       type: "picker",
       typeProps: {
@@ -94,17 +92,6 @@ export function getFormData() {
         },
       },
     },
-    // {
-    //   key: "d",
-    //   title: "是否开启",
-
-    //   type: "atSwitch",
-    //   typeProps: {
-    //     title: "是否开启",
-    //     // checked: (value) => value.d,
-    //   },
-    // },
-
     {
       key: "b",
       title: "备注",
@@ -114,36 +101,7 @@ export function getFormData() {
         maxLength: 100,
       },
       className: "textarea",
-      // hidden: (formValue) => {
-      //   return formValue.type ==='aa';
-      // },
     },
-
-    // {
-    //   key: 'prefer_region',
-    //   title: '意向区域',
-    //   type: 'picker',
-    //   required: true, // 前端写死
-    //   typeProps: {},
-    //   className: 'marginBottom',
-    //   checkWidgetShow: formValue => {
-    //     if (formValue.type === '求购' && !formValue.client_demand_type) {
-    //       taroToast('请先选择类型')
-    //       return false
-    //     }
-    //     return true
-    //   },
-    //   widget: 'new-page',
-    //   widgetProps: {
-    //     onJumpToNewPage: (formValue, item) => {
-    //       const url = '/enterCustomerPage/pages/inputCustomersRegion/index'
-    //       const urlParams = `client_demand_type=${formValue.client_demand_type}`
-    //       Taro.navigateTo({
-    //         url: `${url}?${urlParams}`,
-    //       })
-    //     },
-    //   },
-    // },
   ];
   return formData;
 }

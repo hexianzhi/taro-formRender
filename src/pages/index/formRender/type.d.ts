@@ -8,7 +8,7 @@ export interface FRProps {
   /** 值 */
   formValue: IAnyObject;
   /** 值改变回调 */
-  onChange: (key: string, value: any, newFormValue: any) => void;
+  onChange: (newFormValue: any, key: string, value: any) => void;
 }
 
 export interface IFormSchema {
