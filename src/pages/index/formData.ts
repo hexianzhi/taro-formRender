@@ -15,7 +15,7 @@ import { IFormSchema } from "./formRender/type";
 // const floorObj = fckBuxian(floorRange, floorRange1)
 
 export function getFormData() {
-  console.log("getFormData this: ", this);
+ 
   const formData: IFormSchema[] = [
     {
       key: "a",

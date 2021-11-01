@@ -34,7 +34,7 @@ export default class Index extends Component<any, any> {
   submit = async () => {
     const canSubmit = this.formRef.current.validate();
     console.log("canSubmit: ", canSubmit);
-    if (!canSubmit) return;
+    // if (!canSubmit) return;
   };
 
   // 改变某个数据源数据

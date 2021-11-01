@@ -20,7 +20,7 @@ const FrPicker = (props) => {
 
   return (
     <>
-      <Text className="com-formRender-item-label">{title}</Text>
+      <Text className="fr-item-label">{title}</Text>
       <Picker className="picker-com" onChange={onPickerChange} {...typeProps}>
         <Text>{value || "请选择"}</Text>
       </Picker>

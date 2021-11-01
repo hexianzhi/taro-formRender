@@ -1,8 +1,7 @@
-const SupportFunctionStatus = ["hidden", "required", "disabled"];
-
+ 
 export const getClsOrStyle = (item, formValue) => {
   const { type, key, style = {}, className = "", disabled } = item;
-  let itemCls = `com-formRender-item ${type} ${className}`;
+  let itemCls = `fr-item ${type} ${className}`;
   if (disabled) {
     itemCls += " disabled";
   }
@@ -13,12 +12,13 @@ export const getClsOrStyle = (item, formValue) => {
   return { itemCls, itemStyle, phStyle };
 };
 
-export const getStatus = (obj, formValue, formSchema) => {
+// 执行函数式
+export const transformItem = (item, formValue, formSchema, SupportFunctionItem) => {
   let result = {};
-  Object.keys(obj).forEach((v) => {
-    if (!SupportFunctionStatus.includes(v)) return;
-    if (typeof obj[v] === "function") result[v] = obj[v](formValue, formSchema);
-    else result[v] = obj[v];
+  Object.keys(item).forEach((v) => {
+    if (!SupportFunctionItem.includes(v)) return;
+    if (typeof item[v] === "function") result[v] = item[v](formValue, formSchema);
+    else result[v] = item[v];
   });
   return result as any;
 };

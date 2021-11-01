@@ -8,12 +8,10 @@ const formData = [
     key: "a",
     title: "地址",
     type: "input",
+    required: true,
+    // 注入组件
     typeProps: {
-      name: "a1",
-      maxLength: 10,
       title: "地址",
-      placeholder: "请输入",
-      type: "text",
     },
   },
   {
@@ -28,12 +26,7 @@ const formData = [
   {
     key: "b",
     title: "备注",
-    required: true,
     type: "textarea",
-    className: "textarea",
-    typeProps: {
-      maxLength: 100,
-    },
   },
 ];
 

@@ -5,24 +5,32 @@ import { isEqual } from "lodash";
 import React, { forwardRef, useImperativeHandle } from "react";
 import "./index.scss";
 import { FRProps } from "./type";
-import { getClsOrStyle, getStatus } from "./utils";
+import { getClsOrStyle, transformItem } from "./utils";
 import { validate } from "./validate";
 import { Widgets } from "./widget/index";
+
+// 支持函数表达式的字段
+const SupportFunctionItem = ["title", "hidden", "required", "disabled"];
+// 注入顶层props的字段
+const injectCompKeys = ["title", "hidden", "required", "disabled"];
 
 const FormRender = ({ formSchema, formValue = {}, onChange }: FRProps, ref) => {
   useImperativeHandle(ref, () => ({
     validate: _validate,
   }));
+
   const _validate = () => validate(formValue, formSchema);
 
   const renderItem = (item, index) => {
     if (!item) return;
-    const { type, typeProps, key, title, render, extra } = item || {};
-    const { hidden, required, disabled } = getStatus(
+    const { type, typeProps, key, render, extra } = item || {};
+    const finalItem = transformItem(
       item,
       formValue,
-      formSchema
+      formSchema,
+      SupportFunctionItem
     );
+    const { title, hidden } = finalItem;
     const { itemCls, itemStyle } = getClsOrStyle(item, formValue);
     if (!type) {
       throw `${title}字段没有 type,无法渲染`;
@@ -33,20 +41,28 @@ const FormRender = ({ formSchema, formValue = {}, onChange }: FRProps, ref) => {
 
     const value = formValue[key];
     const tempChange = (v) => onChange({ ...formValue, [key]: v }, v, key); // 注入 key
-    const compProps = {
-      item: { ...item, required, hidden, disabled },
+    let compProps = {
       value,
+      item: finalItem,
       formValue,
       formSchema,
       onChange: tempChange,
       ...typeProps,
     };
+    // 展开 item 中指定字段到顶层props
+    injectCompKeys.forEach((v) => {
+      compProps[v] = finalItem[v];
+    });
 
-    let Compoment = Widgets[type];
-    // console.log("Compoment: ", Compoment);
-    // 自定义
+    let Compoment;
     if (type === "custom") {
       Compoment = render(formValue, formSchema, tempChange);
+    } else {
+      Compoment = Widgets[type];
+    }
+    if (!Compoment) {
+      console.warn(`${key}字段的类型找不到，无法渲染`);
+      return;
     }
 
     return (
@@ -58,7 +74,7 @@ const FormRender = ({ formSchema, formValue = {}, onChange }: FRProps, ref) => {
   };
 
   return (
-    <View className="com-formRender">
+    <View className="fr">
       {formSchema.map((v, index) => renderItem(v, index))}
     </View>
   );

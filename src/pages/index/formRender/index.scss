@@ -1,5 +1,5 @@
-.com-formRender {
-  .com-formRender-item {
+.fr {
+  .fr-item {
     background-color: #fff;
     padding: 10px 30px;
     box-sizing: border-box;
@@ -22,7 +22,7 @@
     }
   }
 
-  .com-formRender-item.textarea {
+  .fr-item.textarea {
     flex-direction: column;
     background-color: #fff;
     padding: 16px;
