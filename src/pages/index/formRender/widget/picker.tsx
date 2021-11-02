@@ -1,8 +1,9 @@
 import { View, Text, Picker } from "@tarojs/components";
 import React from "react";
+import { IWidgetProps } from "../type";
 
 // 注意名字
-const FrPicker = (props) => {
+const FrPicker = (props: IWidgetProps) => {
   const { value, item, onChange } = props;
   const { typeProps = {}, title } = item;
 

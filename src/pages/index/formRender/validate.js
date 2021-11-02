@@ -23,8 +23,8 @@ import Taro from '@tarojs/taro'
         if (!isSuccess) {
           const msg =
             requiredRuleMsg(schema) ||
-            DefaultValidateTypeMsgMap[schema.type] + schema.name ||
-            schema.name + '必填'
+            DefaultValidateTypeMsgMap[schema.type] + schema.title ||
+            schema.title + '必填'
 
           throw msg
           // 抛出是为了从第一个开始提示

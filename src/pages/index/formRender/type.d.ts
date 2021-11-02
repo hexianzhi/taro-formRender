@@ -16,9 +16,9 @@ export interface IFormSchema {
   key: string;
   /** 名称 */
   title: string;
-  /** 内置组件类型 */
+  /** 组件类型 */
   type: string;
-  /** 内置组件Props */
+  /** 组件Props */
   typeProps?: IAnyObject;
   /** 是否必填 */
   required?: boolean | IFunctionProps;
@@ -67,6 +67,17 @@ export interface IFormRule {
 export interface IFormRef {
   /** 返回 true 表示验证通过 */
   validate: () => boolean;
+}
+
+export interface IWidgetProps {
+  value: any;
+  item: IFormSchema;
+  formSchema: IFormSchema[];
+  formValue: IAnyObject;
+  /** 值改变回调 */
+  onChange: (value: any) => void;
+  /** 任意字段 */
+  [key: string]: any;
 }
 
 export default FormRender;

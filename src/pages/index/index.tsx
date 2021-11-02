@@ -1,5 +1,5 @@
-import { View } from "@tarojs/components";
-import React, { Component } from "react";
+import { Button, View } from "@tarojs/components";
+import React, { useRef, useState } from "react";
 import FormRender from "./formRender";
 import "./index.scss";
 
@@ -9,9 +9,8 @@ const formData = [
     title: "地址",
     type: "input",
     required: true,
-    // 注入组件
     typeProps: {
-      title: "地址",
+      placeholder: "请输入",
     },
   },
   {
@@ -30,31 +29,28 @@ const formData = [
   },
 ];
 
-export default class Index extends Component<any, any> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      formValue: {},
-      formSchema: formData,
-    };
-  }
+export default function (props) {
+  const formRef = useRef<any>();
+  const [formValue, setformValue] = useState({});
+  const [formSchema, setformSchema] = useState(formData);
 
-  onChange = (newValue) => {
-    this.setState({
-      formValue: newValue,
-    });
+  const onChange = (newValue) => {
+    setformValue(newValue);
+  };
+  const onSubmit = () => {
+    const isValid = formRef.current.validate();
+    console.log("isValid: ", isValid);
   };
 
-  render() {
-    const { formValue, formSchema } = this.state;
-    return (
-      <View className="index">
-        <FormRender
-          formValue={formValue}
-          formSchema={formSchema}
-          onChange={this.onChange}
-        ></FormRender>
-      </View>
-    );
-  }
+  return (
+    <View className="index">
+      <FormRender
+        ref={formRef}
+        formValue={formValue}
+        formSchema={formSchema}
+        onChange={onChange}
+      ></FormRender>
+      <Button onClick={onSubmit}>提交</Button>
+    </View>
+  );
 }

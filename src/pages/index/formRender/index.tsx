@@ -4,8 +4,8 @@ import { View } from "@tarojs/components";
 import { isEqual } from "lodash";
 import React, { forwardRef, useImperativeHandle } from "react";
 import "./index.scss";
-import { FRProps } from "./type";
-import { getClsOrStyle, transformItem } from "./utils";
+import { FRProps, IWidgetProps } from "./type";
+import { getClsOrStyle, transformFunctionItem } from "./utils";
 import { validate } from "./validate";
 import { Widgets } from "./widget/index";
 
@@ -23,14 +23,14 @@ const FormRender = ({ formSchema, formValue = {}, onChange }: FRProps, ref) => {
 
   const renderItem = (item, index) => {
     if (!item) return;
-    const { type, typeProps, key, render, extra } = item || {};
-    const finalItem = transformItem(
+    const { type, key, render, extra } = item || {};
+    const funcItem = transformFunctionItem(
       item,
       formValue,
       formSchema,
       SupportFunctionItem
     );
-    const { title, hidden } = finalItem;
+    const { title, hidden } = funcItem;
     const { itemCls, itemStyle } = getClsOrStyle(item, formValue);
     if (!type) {
       throw `${title}字段没有 type,无法渲染`;
@@ -41,17 +41,17 @@ const FormRender = ({ formSchema, formValue = {}, onChange }: FRProps, ref) => {
 
     const value = formValue[key];
     const tempChange = (v) => onChange({ ...formValue, [key]: v }, v, key); // 注入 key
-    let compProps = {
+    let compProps: IWidgetProps = {
       value,
-      item: finalItem,
+      item: { ...item, funcItem },
       formValue,
       formSchema,
       onChange: tempChange,
-      ...typeProps,
     };
+
     // 展开 item 中指定字段到顶层props
     injectCompKeys.forEach((v) => {
-      compProps[v] = finalItem[v];
+      compProps[v] = funcItem[v];
     });
 
     let Compoment;

@@ -13,7 +13,7 @@ export const getClsOrStyle = (item, formValue) => {
 };
 
 // 执行函数式
-export const transformItem = (item, formValue, formSchema, SupportFunctionItem) => {
+export const transformFunctionItem = (item, formValue, formSchema, SupportFunctionItem) => {
   let result = {};
   Object.keys(item).forEach((v) => {
     if (!SupportFunctionItem.includes(v)) return;

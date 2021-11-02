@@ -1,7 +1,8 @@
 import { View, Text } from "@tarojs/components";
 import { AtTextarea } from "taro-ui";
+import { IWidgetProps } from "../type";
 
-const Textarea = (props) => {
+const Textarea = (props: IWidgetProps) => {
   const { value, item, onChange } = props;
   const { typeProps = {}, title, required } = item;
 
