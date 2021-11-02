@@ -5,7 +5,7 @@ import { set } from "lodash";
 import cloneDeep from "lodash.clonedeep";
 import React, { useRef, useState } from "react";
 import FormRender from "../../compoments/formRender";
-import { getFormData } from "./formData";
+import { getFormData } from "./formData.tsx";
 import "./index.scss";
 
 const Index = (props) => {
@@ -26,6 +26,7 @@ const Index = (props) => {
   );
 
   const onChange = (newValue) => {
+    console.log('newValue: ', newValue);
     setformValue(newValue);
   };
   const onSubmit = () => {

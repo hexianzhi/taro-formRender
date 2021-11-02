@@ -3,8 +3,10 @@
     background-color: #fff;
     padding: 10px 30px;
     box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
     &-label {
-      width: 100px;
+      width: 150px;
     }
 
     &.picker {

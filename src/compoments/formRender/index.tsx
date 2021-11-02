@@ -59,15 +59,15 @@ const FormRender = ({ formSchema, formValue = {}, onChange }: FRProps, ref) => {
       Compoment = render(formValue, formSchema, tempChange);
     } else {
       Compoment = Widgets[type];
-    }
-    if (!Compoment) {
-      console.warn(`${key}字段的类型找不到，无法渲染`);
-      return;
+      if (!Compoment) {
+        console.warn(`${key}字段的类型找不到，无法渲染`);
+        return;
+      }
     }
 
     return (
       <View className={itemCls} style={itemStyle} key={index}>
-        <Compoment {...compProps}></Compoment>
+        {type === "custom" ? Compoment : <Compoment {...compProps}></Compoment>}
         {extra}
       </View>
     );

@@ -8,7 +8,7 @@ export interface FRProps {
   /** 值 */
   formValue: IAnyObject;
   /** 值改变回调 */
-  onChange: (newFormValue: any, key: string, value: any) => void;
+  onChange: (newFormValue: any, key?: string, value?: any) => void;
 }
 
 export interface IFormSchema {
@@ -30,15 +30,11 @@ export interface IFormSchema {
   diabled?: boolean | IFunctionProps;
   /** 验证规则 */
   rules?: IRule[];
-  /** 扩展组件 */
-  widget?: string;
-  /** 扩展组件props */
-  widgetProps?: IAnyObject;
   /** 自定义组件 */
-  custom?: (
+  render?: (
     formValue: IAnyObject,
     formSchema: IFormSchema,
-    onChange: (key: string, value: any) => void
+    onChange: (value?: any) => void
   ) => JSX.Element;
 
   /** 任意字段 */
