@@ -1,38 +1,29 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable react/sort-comp */
 import { Button, View } from "@tarojs/components";
+import { set } from "lodash";
+import cloneDeep from "lodash.clonedeep";
 import React, { useRef, useState } from "react";
 import FormRender from "../../compoments/formRender";
+import { getFormData } from "./formData";
 import "./index.scss";
-
-const formData = [
-  {
-    key: "a",
-    title: "地址",
-    type: "input",
-    required: true,
-    typeProps: {
-      placeholder: "请输入",
-    },
-  },
-  {
-    key: "c",
-    title: "国家",
-    type: "picker",
-    typeProps: {
-      mode: "selector",
-      range: ["美国", "中国", "巴西", "日本"],
-    },
-  },
-  {
-    key: "b",
-    title: "备注",
-    type: "textarea",
-  },
-];
 
 const Index = (props) => {
   const formRef = useRef<any>();
   const [formValue, setformValue] = useState({});
-  const [formSchema, setformSchema] = useState(formData);
+
+  // 改变某个数据源数据
+  const changeSingleFormData = (key, newData, name, childName) => {
+    const _formSchema = cloneDeep(formSchema);
+    const item = _formSchema.find((i) => i.key === key);
+    if (!item) return;
+    set(item, `${name}.${childName}`, newData);
+    setformSchema(_formSchema);
+  };
+
+  const [formSchema, setformSchema] = useState(() =>
+    getFormData(changeSingleFormData)
+  );
 
   const onChange = (newValue) => {
     setformValue(newValue);
@@ -54,4 +45,6 @@ const Index = (props) => {
     </View>
   );
 };
+
 export default Index;
+ 

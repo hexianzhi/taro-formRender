@@ -1,21 +1,7 @@
 // import Taro from '@tarojs/taro'
-import { IFormSchema } from "./formRender/type";
+import { IFormSchema } from "../index/formRender/type";
 
-// const fckBuxian = (ranges, ranges1) => {
-//   ranges1.unshift(['不限', ranges.concat(['不限'])])
-//   return Object.fromEntries(ranges1)
-// }
-
-// const floorRange = floor('楼', 1, 1, 100)
-// const floorRange1 = floorRange.map((v, index, arr) => [
-//   `${v}`,
-//   floor('楼', getNum(v) + 1, 1, 100).concat(['不限']),
-// ])
-// //  allRangeObj 数据结构: {a: ["a1", 'a2'], b: ['b1', 'b2']}
-// const floorObj = fckBuxian(floorRange, floorRange1)
-
-export function getFormData() {
- 
+export function getFormData(changeSingleFormData) {
   const formData: IFormSchema[] = [
     {
       key: "a",
@@ -60,7 +46,7 @@ export function getFormData() {
       },
     },
     {
-      key: "c",
+      key: "d",
       title: "地区",
       type: "picker",
       typeProps: {
@@ -79,8 +65,8 @@ export function getFormData() {
           const { column, value } = e.detail;
           if (column === 0) {
             // 第一列
-            this.changeSingleFormData(
-              "c",
+            changeSingleFormData(
+              "d",
               [
                 Object.keys(allRangeObj),
                 allRangeObj[Object.keys(allRangeObj)[value]],
@@ -93,7 +79,7 @@ export function getFormData() {
       },
     },
     {
-      key: "b",
+      key: "e",
       title: "备注",
       required: true,
       type: "textarea",
